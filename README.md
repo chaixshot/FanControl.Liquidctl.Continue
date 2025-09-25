@@ -1,4 +1,9 @@
-# FanControl.Liquidctl
+# FanControl.Liquidctl.Continue
+
+This is a fork of [jmarucha](https://github.com/jmarucha/FanControl.Liquidctl)'s original.
+1. It stops **liquidctl** from starting and stopping all the time by attempting to retry on return any error.
+2. Updated the **liquidctl** library to support **ASUS ROG pump embedded fan**.
+3. Fixed **Degree Symbol (°)** UTF-8 error for some PC with **Windows Language for non-Unicode programs** changed.
 
 This is a simple plugin that uses [liquidctl](https://github.com/liquidctl/liquidctl) to provide sensor data and pump control to variety of AIOs. So far it is tested with NZXT Kraken X63, but in principle shall work with [supported devices](https://github.com/liquidctl/liquidctl#supported-devices)
 

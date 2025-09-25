@@ -18,8 +18,8 @@ The project, after being imported to Visual Studio needs to have it reference to
 
 ## Screenshots
 
-![Fluid temperature sensor](/docs/images/FluidTemp.png)
-![Pump speed and control](/docs/images/PumpControl.png)
+<img alt="image" src="https://github.com/user-attachments/assets/66e0f15c-cf37-4921-b6bd-88b6fd233c21" />
+<img alt="image" src="https://github.com/user-attachments/assets/ea6e07db-cdac-482f-8755-8906ea24a7b7" />
 
 ## License
 MIT license, because it's superior.

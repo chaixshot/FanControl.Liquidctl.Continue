@@ -18,8 +18,8 @@ The project, after being imported to Visual Studio needs to have it reference to
 
 ## Screenshots
 
-<img alt="image" src="https://github.com/user-attachments/assets/66e0f15c-cf37-4921-b6bd-88b6fd233c21" />
-<img alt="image" src="https://github.com/user-attachments/assets/ea6e07db-cdac-482f-8755-8906ea24a7b7" />
+<img width="276" height="250" alt="image" src="https://github.com/user-attachments/assets/66c1135e-44a3-42c5-9d6b-df8c905845a1" />
+<img width="570" height="346" alt="image" src="https://github.com/user-attachments/assets/3a787ac6-6296-4339-ba02-227d0db309e2" />
 
 ## License
 MIT license, because it's superior.

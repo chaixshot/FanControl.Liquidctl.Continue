@@ -9,7 +9,8 @@ This is a simple plugin that uses [liquidctl](https://github.com/liquidctl/liqui
 
 ## Installation
 
-Grab a release and unpack it to `Plugins` directory of your FanControl instalation. It contains Windows bundle of liquidctl.
+1. Download **FanControl.Liquidctl.zip** from [Release](https://github.com/chaixshot/FanControl.Liquidctl.Continue/releases/latest)
+2. Open **Fan Control** **>** Setting **>** Plugin **>** Install plugin... **>** Select **FanControl.Liquidctl.zip** > Open
 
 ## Setting up the developer environment
 

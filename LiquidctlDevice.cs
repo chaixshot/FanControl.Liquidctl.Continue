@@ -438,8 +438,8 @@ namespace FanControl.Liquidctl
             if (hasLiquidTemperature) ret += $", Liquid @ {liquidTemperature.Value}";
             if (hasPumpSpeed) ret += $", Pump @ {pumpSpeed.Value}";
             if (hasPumpDuty) ret += $"({pumpDuty.Value})";
-            if (hasFanSpeed) ret += $", Fan @ {fanSpeed.Value} ({fanControl.Value})";
-            if (hasMicroFanSpeed) ret += $", Micro Fan @ {microFanSpeed.Value} ({microFanControl.Value})";
+            if (hasFanSpeed) ret += $", Fan @ {fanSpeed.Value}({fanControl.Value})";
+            if (hasMicroFanSpeed) ret += $", Micro Fan @ {microFanSpeed.Value}({microFanControl.Value})";
 
             for (int i = 0; i<20; i++) {
                 if (hasMultipleFanSpeed[i]) {

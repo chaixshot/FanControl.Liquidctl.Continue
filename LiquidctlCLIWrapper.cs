@@ -14,8 +14,8 @@ namespace FanControl.Liquidctl
 {
     internal static class LiquidctlCLIWrapper
     {
-         public static string liquidctlexe = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "liquidctl.exe");   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
-        //public static string liquidctlexe = "liquidctl";   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
+         //public static string liquidctlexe = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "liquidctl.exe");   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
+        public static string liquidctlexe = "py";   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
                                                            // TODO: extract path to executable to config(?) - Seems to work fine now though
         internal static IPluginLogger logger;
 
@@ -73,7 +73,7 @@ namespace FanControl.Liquidctl
                 process.StartInfo.RedirectStandardError = true;
 
                 process.StartInfo.FileName = liquidctlexe;
-                process.StartInfo.Arguments = arguments;
+                process.StartInfo.Arguments = "-X utf8 -m liquidctl " + arguments;
 
                 process.Start();
                 process.WaitForExit();

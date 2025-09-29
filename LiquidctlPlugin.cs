@@ -31,7 +31,7 @@ namespace FanControl.Liquidctl
             foreach (LiquidctlStatusJSON liquidctl in input)
             {
                 LiquidctlDevice device = new LiquidctlDevice(liquidctl, logger);
-                logger.Log(device.GetDeviceInfo());
+                logger.Log("[Liquidctl] " + device.GetDeviceInfo());
 
                 if (device.hasPumpSpeed)
                 {

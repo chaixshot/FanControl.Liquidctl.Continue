@@ -36,7 +36,8 @@ namespace FanControl.Liquidctl
 
         internal static List<LiquidctlStatusJSON> ReadStatus(string address)
         {
-            Process process = LiquidctlCallBackend(address, "status");
+            Process process = GetLiquidCtlBackend(address);
+            process.StandardInput.WriteLine("status");
             string line = process.StandardOutput.ReadLine();
             // restart if liquidctl crashed
             if (line == null)
@@ -131,7 +132,7 @@ namespace FanControl.Liquidctl
             return process;
         }
 
-        private static Process LiquidctlCallBackend(string address, string paremeter)
+        private static void LiquidctlCallBackend(string address, string paremeter)
         {
             Process process = GetLiquidCtlBackend(address);
             process.StandardInput.WriteLine(paremeter);
@@ -139,7 +140,7 @@ namespace FanControl.Liquidctl
             JObject result = JObject.Parse(process.StandardOutput.ReadLine());
             string status = (string)result.SelectToken("status");
             if (status == "success")
-                return process;
+                return;
             throw new Exception((string)result.SelectToken("data"));
         }
 

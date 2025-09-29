@@ -106,6 +106,18 @@ namespace FanControl.Liquidctl
             throw new Exception((string)result.SelectToken("data"));
         }
 
+        internal static void SetExternalFanNumber(string address, int index, int value)
+        {
+            Process process = GetLiquidCtlBackend(address);
+            process.StandardInput.WriteLine($"set external-fans speed {(value)}");
+
+            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
+            string status = (string)result.SelectToken("status");
+            if (status == "success")
+                return;
+            throw new Exception((string)result.SelectToken("data"));
+        }
+
         private static Process RestartLiquidCtlBackend(Process oldProcess, string address)
         {
             liquidctlBackends.Remove(address);

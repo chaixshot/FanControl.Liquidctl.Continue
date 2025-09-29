@@ -331,6 +331,82 @@ namespace FanControl.Liquidctl
             public void Update() { } // plugin updates sensors
         }
 
+        public class ExternalFanSpeedMultiple : IPluginSensor
+        {
+            public ExternalFanSpeedMultiple(int index, LiquidctlStatusJSON output)
+            {
+                _id = $"{output.address.ToLower()}-externalfan{index}rpm";
+                _name = $"External Fan {index} - {output.description}";
+                UpdateFromJSON(index, output);
+            }
+
+            public void UpdateFromJSON(int index, LiquidctlStatusJSON output)
+            {
+                string currentKey = KEY.Replace("###", index.ToString());
+                _value = (float) output.status.Single(entry => entry.key == currentKey).GetValueAsFloat();
+            }
+
+            public static string KEY = "External fan ### speed";
+
+            public string Id => _id;
+            readonly string _id;
+
+            public string Name => _name;
+            readonly string _name;
+
+            public float? Value => _value;
+            float _value;
+
+            public void Update() { } // plugin updates sensors
+        }
+
+        // Try to control multiple fans
+        public class ExternalFanDutyMultiple : IPluginControlSensor
+        {
+            public ExternalFanDutyMultiple(int index, LiquidctlStatusJSON output)
+            {
+                _address = output.address;
+                _id = $"{output.address.ToLower()}-externalfan{index}duty";
+                _name = $"External Fan {index} Control - {output.description}";
+                _index = index;
+
+                UpdateFromJSON(index, output);
+            }
+
+            // We can only estimate, as it is not provided in any output
+            public void UpdateFromJSON(int index, LiquidctlStatusJSON output) {
+                string currentKey = ExternalFanSpeedMultiple.KEY.Replace("###", index.ToString());
+                _value = (float)output.status.Single(entry => entry.key == currentKey).GetValueAsFloat();
+            }
+
+            public static string KEY = "External fan ### duty";
+
+            public string Id => _id;
+            readonly string _id;
+            string _address;
+
+            public string Name => _name;
+            readonly string _name;
+
+            public float? Value => _value;
+            float _value;
+
+            public int Index => _index;
+            int _index;
+
+            public void Reset()
+            {
+                Set(50.0f);
+            }
+
+            public void Set(float val)
+            {
+                LiquidctlCLIWrapper.SetExternalFanNumber(_address, _index, (int) val);
+            }
+
+            public void Update() { } // plugin updates sensors
+        }
+
         public LiquidctlDevice(LiquidctlStatusJSON output, IPluginLogger pluginLogger)
         {
             logger = pluginLogger;
@@ -375,11 +451,25 @@ namespace FanControl.Liquidctl
                     fanControlMultiple[i] = new FanDutyMultiple(index, output);
                 }
             }
+
+            //for (int i=0; i<20; i++)
+            //{
+            //    int index = i + 1;
+            //    string currentKey = ExternalFanSpeedMultiple.KEY.Replace("###", index.ToString());
+            //    hasExternalMultipleFanSpeed[i] = output.status.Exists(entry => entry.key == currentKey && !(entry.GetValueAsFloat() is null));
+
+            //    if (hasExternalMultipleFanSpeed[i])
+            //    {
+            //        externalFanSpeedMultiple[i] = new ExternalFanSpeedMultiple(index, output);
+            //        externalFanControlMultiple[i] = new ExternalFanDutyMultiple(index, output);
+            //    }
+            //}
         }
 
 
         public readonly bool hasPumpSpeed, hasPumpDuty, hasLiquidTemperature, hasFanSpeed, hasMicroFanSpeed;
         public readonly bool[] hasMultipleFanSpeed = new bool[20];
+        public readonly bool[] hasExternalMultipleFanSpeed = new bool[20];
 
 
         public void UpdateFromJSON(LiquidctlStatusJSON output)
@@ -402,6 +492,13 @@ namespace FanControl.Liquidctl
                     fanControlMultiple[i].UpdateFromJSON(i+1, output);
                 }
             }
+
+            for (int i = 0; i<20; i++) {
+                if (hasExternalMultipleFanSpeed[i]) {
+                    externalFanSpeedMultiple[i].UpdateFromJSON(i+1, output);
+                    externalFanControlMultiple[i].UpdateFromJSON(i+1, output);
+                }
+            }
         }
 
 
@@ -417,6 +514,9 @@ namespace FanControl.Liquidctl
 
         public FanSpeedMultiple[] fanSpeedMultiple = new FanSpeedMultiple[20];
         public FanDutyMultiple[] fanControlMultiple = new FanDutyMultiple[20];
+
+        public ExternalFanSpeedMultiple[] externalFanSpeedMultiple = new ExternalFanSpeedMultiple[20];
+        public ExternalFanDutyMultiple[] externalFanControlMultiple = new ExternalFanDutyMultiple[20];
 
 
         public void LoadJSON()
@@ -444,6 +544,12 @@ namespace FanControl.Liquidctl
             for (int i = 0; i<20; i++) {
                 if (hasMultipleFanSpeed[i]) {
                     ret += $", Fan{i+1} @ {fanSpeedMultiple[i].Value} ({fanControlMultiple[i].Value})";
+                }
+            }
+
+            for (int i = 0; i<20; i++) {
+                if (hasExternalMultipleFanSpeed[i]) {
+                    ret += $", Fan{i+1} @ {externalFanSpeedMultiple[i].Value} ({externalFanControlMultiple[i].Value})";
                 }
             }
 

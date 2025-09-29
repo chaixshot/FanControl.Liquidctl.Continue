@@ -1,11 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
+﻿using FanControl.Plugins;
 using Newtonsoft.Json;
-using FanControl.Plugins;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 
@@ -14,9 +15,9 @@ namespace FanControl.Liquidctl
 {
     internal static class LiquidctlCLIWrapper
     {
-         public static string liquidctlexe = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "liquidctl.exe");   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
-        //public static string liquidctlexe = "liquidctl";   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
-                                                           // TODO: extract path to executable to config(?) - Seems to work fine now though
+        public static string liquidctlexe = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "liquidctl.exe");   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
+                                                                                                                                                                //public static string liquidctlexe = "liquidctl";   // This should always resolve to the same directory as the FanControl.Liquidctl.dll
+                                                                                                                                                                // TODO: extract path to executable to config(?) - Seems to work fine now though
         internal static IPluginLogger logger;
         private static Dictionary<string, Process> liquidctlBackends = new Dictionary<string, Process>();
 
@@ -35,8 +36,7 @@ namespace FanControl.Liquidctl
 
         internal static List<LiquidctlStatusJSON> ReadStatus(string address)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine("status");
+            Process process = LiquidctlCallBackend(address, "status");
             string line = process.StandardOutput.ReadLine();
             // restart if liquidctl crashed
             if (line == null)
@@ -58,62 +58,27 @@ namespace FanControl.Liquidctl
 
         internal static void SetPump(string address, int value)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine($"set pump speed {(value)}");
-
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
-            string status = (string)result.SelectToken("status");
-            if (status == "success")
-                return;
-            throw new Exception((string)result.SelectToken("data"));
+            LiquidctlCallBackend(address, $"set pump speed {(value)}");
         }
 
         internal static void SetFan(string address, int value)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine($"set fan speed {(value)}");
-
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
-            string status = (string)result.SelectToken("status");
-            if (status == "success")
-                return;
-            throw new Exception((string)result.SelectToken("data"));
+            LiquidctlCallBackend(address, $"set fan speed {(value)}");
         }
 
         internal static void SetMicroFan(string address, int value)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine($"set pump-fan speed {(value)}");
-
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
-            string status = (string)result.SelectToken("status");
-            if (status == "success")
-                return;
-            throw new Exception((string)result.SelectToken("data"));
+            LiquidctlCallBackend(address, $"set pump-fan speed {(value)}");
         }
 
         internal static void SetFanNumber(string address, int index, int value)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine($"set fan{index} speed {(value)}");
-
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
-            string status = (string)result.SelectToken("status");
-            if (status == "success")
-                return;
-            throw new Exception((string)result.SelectToken("data"));
+            LiquidctlCallBackend(address, $"set fan{index} speed {(value)}");
         }
 
         internal static void SetExternalFanNumber(string address, int index, int value)
         {
-            Process process = GetLiquidCtlBackend(address);
-            process.StandardInput.WriteLine($"set external-fans speed {(value)}");
-
-            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
-            string status = (string)result.SelectToken("status");
-            if (status == "success")
-                return;
-            throw new Exception((string)result.SelectToken("data"));
+            LiquidctlCallBackend(address, $"set external-fans speed {(value)}");
         }
 
         private static Process RestartLiquidCtlBackend(Process oldProcess, string address)
@@ -166,6 +131,18 @@ namespace FanControl.Liquidctl
             return process;
         }
 
+        private static Process LiquidctlCallBackend(string address, string paremeter)
+        {
+            Process process = GetLiquidCtlBackend(address);
+            process.StandardInput.WriteLine(paremeter);
+
+            JObject result = JObject.Parse(process.StandardOutput.ReadLine());
+            string status = (string)result.SelectToken("status");
+            if (status == "success")
+                return process;
+            throw new Exception((string)result.SelectToken("data"));
+        }
+
         private static string LiquidctlCall(string arguments)
         {
             string output = "";
@@ -202,7 +179,7 @@ namespace FanControl.Liquidctl
                         $"-------------------------------");
                 }
                 Thread.Sleep(1500);
-                logger.Log($"[Liquidctl] Retrying ({retry}):\nliquidctl {arguments}" );
+                logger.Log($"[Liquidctl] Retrying ({retry}):\nliquidctl {arguments}");
             }
             return output;
         }

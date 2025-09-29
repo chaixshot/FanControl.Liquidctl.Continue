@@ -37,7 +37,7 @@ namespace FanControl.Liquidctl
                 {
                     _container.FanSensors.Add(device.pumpSpeed);
                 }
-                
+
                 if (device.hasPumpDuty)
                 {
                     _container.ControlSensors.Add(device.pumpDuty);
@@ -47,7 +47,7 @@ namespace FanControl.Liquidctl
                 {
                     _container.TempSensors.Add(device.liquidTemperature);
                 }
-                
+
                 if (device.hasFanSpeed)
                 {
                     _container.FanSensors.Add(device.fanSpeed);
@@ -60,7 +60,7 @@ namespace FanControl.Liquidctl
                     _container.ControlSensors.Add(device.microFanControl);
                 }
 
-                for (int i = 0; i<20; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     if (device.hasMultipleFanSpeed[i])
                     {
@@ -69,7 +69,7 @@ namespace FanControl.Liquidctl
                     }
                 }
 
-                for (int i = 0; i<20; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     if (device.hasExternalMultipleFanSpeed[i])
                     {

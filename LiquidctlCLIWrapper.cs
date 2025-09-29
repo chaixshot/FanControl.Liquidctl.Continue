@@ -19,7 +19,6 @@ namespace FanControl.Liquidctl
                                                            // TODO: extract path to executable to config(?) - Seems to work fine now though
         internal static IPluginLogger logger;
         private static Dictionary<string, Process> liquidctlBackends = new Dictionary<string, Process>();
-        private static bool hasLastCallFailed = false;
 
         internal static void Initialize(IPluginLogger pluginLogger)
         {
@@ -52,7 +51,6 @@ namespace FanControl.Liquidctl
             }
             JObject result = JObject.Parse(line);
             string status = (string)result.SelectToken("status");
-            hasLastCallFailed = false;
             if (status == "success")
                 return result.SelectToken("data").ToObject<List<LiquidctlStatusJSON>>();
             throw new Exception((string)result.SelectToken("data"));
